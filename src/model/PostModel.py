@@ -1,4 +1,4 @@
-from src.model.BaseModel import BaseModel
+from model.BaseModel import BaseModel
 
 class PostModel(BaseModel) : 
   def __init__(self, table):

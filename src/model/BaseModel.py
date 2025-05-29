@@ -1,13 +1,14 @@
 import mysql.connector
+from config.config import DB_HOST,DB_NAME,DB_PASSWORD,DB_USER
 
 class BaseModel:
     def __init__(self, table):
         self.table = table
         self.conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="$Aviasi380",
-            database="learn-laravel"
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            database=DB_NAME
         )
         self.cursor = self.conn.cursor(dictionary=True)
 

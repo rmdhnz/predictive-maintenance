@@ -1,3 +1,9 @@
 venv/
 tes.py
+src/__pycache__/
+alembic.ini
 __pycache__/
+alembic/
+src/**/__pycache__/
+src/model/
+**/__pycache__/
