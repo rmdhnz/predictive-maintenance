@@ -20,6 +20,14 @@ class MotorCurrent(Base):
     __tablename__ = "motor_current"
 
     id = Column(Integer, primary_key=True)
-    time = Column(Float)
-    current_normal = Column(Float)
-    current_fault = Column(Float)
+    time = Column(String(20))
+    current = Column(Float)
+    load = Column(Integer)
+
+
+class MotorBRBCurrent3mm(Base):
+    __tablename__ = "motor_brb_current_3mm"
+    id = Column(Integer, primary_key=True)
+    time = Column(String(20))
+    current = Column(Float)
+    load = Column(Integer)
