@@ -7,5 +7,5 @@ alembic/
 src/**/__pycache__/
 src/model/
 **/__pycache__/
-data-*/
+data*/
 *.zip
