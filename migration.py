@@ -31,3 +31,37 @@ class MotorBRBCurrent3mm(Base):
     time = Column(String(20))
     current = Column(Float)
     load = Column(Integer)
+
+
+class MotorBRBCurrent7mm(Base):
+    __tablename__ = "motor_brb_current_7mm"
+    id = Column(Integer, primary_key=True)
+    time = Column(String(20))
+    current = Column(Float)
+    load = Column(Integer)
+
+
+class MotorBRB3_7_mm(Base):
+    __tablename__ = "motor_2_brb_current_3_7_mm"
+    id = Column(Integer, primary_key=True)
+    time = Column(String(20))
+    current = Column(Float)
+    load = Column(Integer)
+
+
+class MotorDB(Base):
+    __tablename__ = "motor_db"
+    id = Column(Integer, primary_key=True)
+    frequency = Column(Float)
+    current_magnitude = Column(Float)
+    load = Column(Integer)
+
+
+class BoundModel(Base):
+    __tablename__ = "bounds"
+    id = Column(Integer, primary_key=True)
+    jenis = Column(String(255))
+    range_0 = Column(String(255))
+    range_50 = Column(String(255))
+    range_100 = Column(String(255))
+    nama = Column(String(255))

@@ -2,6 +2,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from scipy.signal import find_peaks
+import matplotlib.pyplot as plt
 
 
 class Utilities:
@@ -12,7 +13,7 @@ class Utilities:
         return t.minute * 60 + t.second + t.microsecond / 1e6
 
     @staticmethod
-    def fft_current_by_load(data):
+    def fft_current_by_load(data, status):
         time_seconds = data["time"].apply(Utilities.time_to_seconds)
         time_seconds = time_seconds - time_seconds.iloc[0]
         data["time_sec"] = time_seconds
@@ -36,13 +37,18 @@ class Utilities:
 
             f = fs * np.arange(0, N // 2 + 1) / N
             df_result = pd.DataFrame(
-                {"frequency": f, "current_magnitude": P1, "load": load}
+                {
+                    "frequency": f,
+                    "current_magnitude": P1,
+                    "load": load,
+                    "status": status,
+                }
             )
             result_list.append(df_result)
         return pd.concat(result_list, ignore_index=True)
 
     @staticmethod
-    def fft_current_db_by_load(data, reference=None):
+    def fft_current_db_by_load(data, status, reference=None):
         time_seconds = data["time"].apply(Utilities.time_to_seconds)
         time_seconds = time_seconds - time_seconds.iloc[0]
         data = data.copy()
@@ -89,7 +95,7 @@ class Utilities:
             )  # +1e-12 untuk menghindari log(0)
 
             df_result = pd.DataFrame(
-                {"frequency": f, "magnitude_db": mag_db, "load": load}
+                {"frequency": f, "magnitude_db": mag_db, "load": load, "status": status}
             )
 
             # Opsional: cari peak frekuensi
@@ -129,3 +135,32 @@ class Utilities:
                 "Multiple broken rotor bars and other severe rotor problems",
                 "Overhaul or Replace",
             )
+
+    @staticmethod
+    def plot_by_load(
+        data: pd.DataFrame,
+        title,
+        xlabel,
+        ylabel,
+        xlim=None,
+        ylim=None,
+        peaks=False,
+    ):
+        for load in data["load"].unique():
+            df_load = data[data["load"] == load]
+            plt.plot(
+                df_load["frequency"],
+                df_load["current_magnitude"],
+                label=f"Load {load}%",
+            )
+            if peaks:
+                peak = df_load[df_load["is_peak"]]
+                plt.scatter(peak["frequency"], peak["magnitude_db"], color="red")
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.title(title)
+        plt.grid(True)
+        plt.legend()
+        plt.xlim(xlim)
+        plt.ylim(ylim)
+        plt.show()
