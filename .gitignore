@@ -1,11 +1,8 @@
 venv/
 tes.py
-src/__pycache__/
 alembic.ini
 __pycache__/
 alembic/
-src/**/__pycache__/
-**/__pycache__/
 data*/
 *.zip
 referensi-noumi/
