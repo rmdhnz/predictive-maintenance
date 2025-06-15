@@ -1,5 +1,6 @@
 import mysql.connector
 from config.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_USER
+from model.ResultWrapper import ResultWrapper
 
 
 class BaseModel:
@@ -10,44 +11,22 @@ class BaseModel:
         )
         self.cursor = self.conn.cursor(dictionary=True)
 
-    def findAll(self, panda=False):
+    def findAll(self):
         self.cursor.execute(f"SELECT * FROM {self.table}")
-        if panda:
-            import pandas as pd
-
-            data = self.cursor.fetchall()
-            columns = [desc[0] for desc in self.cursor.description]
-            df = pd.DataFrame(data, columns=columns)
-            self.close()
-            return df
-        return self.cursor.fetchall()
+        data = self.cursor.fetchall()
+        return ResultWrapper(data, self.cursor.description, self)
 
     def find(self, id):
         self.cursor.execute(f"SELECT * FROM {self.table} WHERE id = %s", (id,))
         return self.cursor.fetchone()
 
-    def first(self):
-        self.cursor.execute(f"SELECT * FROM {self.table} LIMIT 1")
-        return self.cursor.fetchone()
-
-    def where(self, conditions: dict):
-        keys = list(conditions.keys())
-        values = list(conditions.values())
-        where_clause = " AND ".join([f"{k} = %s" for k in keys])
-        query = f"SELECT * FROM {self.table} WHERE {where_clause}"
-        self.cursor.execute(query, tuple(values))
-        return self.cursor.fetchall()
-
-    def select(self, fields: list, where: dict = None):
-        field_clause = ", ".join(fields)
-        query = f"SELECT {field_clause} FROM {self.table}"
-        values = ()
-        if where:
-            where_clause = " AND ".join([f"{k} = %s" for k in where])
-            query += f" WHERE {where_clause}"
-            values = tuple(where.values())
+    def where(self, **kwargs):
+        conditions = " AND ".join([f"{k}=%s" for k in kwargs])
+        values = tuple(kwargs.values())
+        query = f"SELECT * FROM {self.table} WHERE {conditions}"
         self.cursor.execute(query, values)
-        return self.cursor.fetchall()
+        data = self.cursor.fetchall()
+        return ResultWrapper(data, self.cursor.description, self)
 
     def insert(self, data: dict):
         keys = ", ".join(data.keys())
@@ -58,21 +37,18 @@ class BaseModel:
         self.conn.commit()
         return self.cursor.lastrowid
 
-    def update(self, data: dict, where: dict):
-        set_clause = ", ".join([f"{k} = %s" for k in data])
-        where_clause = " AND ".join([f"{k} = %s" for k in where])
-        query = f"UPDATE {self.table} SET {set_clause} WHERE {where_clause}"
-        values = tuple(data.values()) + tuple(where.values())
-        self.cursor.execute(query, values)
-        self.conn.commit()
-        return self.cursor.rowcount
+    def select(self, *fields):
+        columns = ", ".join(fields)
+        query = f"SELECT {columns} FROM {self.table}"
+        self.cursor.execute(query)
+        data = self.cursor.fetchall()
+        description = self.cursor.description
+        return ResultWrapper(data, description, self)
 
-    def delete(self, where: dict):
-        where_clause = " AND ".join([f"{k} = %s" for k in where])
-        query = f"DELETE FROM {self.table} WHERE {where_clause}"
-        self.cursor.execute(query, tuple(where.values()))
+    def truncate_table(self):
+        query = f"TRUNCATE TABLE {self.table}"
+        self.cursor.execute(query)
         self.conn.commit()
-        return self.cursor.rowcount
 
     def close(self):
         self.cursor.close()

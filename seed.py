@@ -1,31 +1,32 @@
-#!/usr/bin/env python3
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from migration import Base, MotorCurrent, MotorBRBCurrent3mm, MotorBRBCurrent7mm
-from datetime import datetime
-import pandas as pd
+# seed.py
+import sys
+import os
 
-DATABASE_URL = f"mysql+pymysql://root:$Aviasi380@localhost/predictive_maintenance"
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "src")))
 
-engine = create_engine(DATABASE_URL)
-Session = sessionmaker(bind=engine)
-session = Session()
-df = pd.read_csv("data-brb-7mm/coba.csv")
+import typer
+import importlib
 
-range_0 = list(range(16515, 108425))
-range_50 = list(range(180628, 240719))
-range_100 = list(range(290616, 391877))
-range_loads = range_0 + range_50 + range_100
-df = df[df.index.isin(range_loads)].copy()
-for id, row in df.iterrows():
-    data = MotorBRBCurrent7mm(
-        time=row["Time"],
-        current=row["current"],
-        load=(0 if id in range_0 else 50 if id in range_50 else 100),
-    )
-    print("Data ke : ", id)
-    session.add(data)
+apps = typer.Typer()
 
-session.commit()
-session.close()
-print("Import dari CSV selesai.")
+
+@apps.command("db-seed")
+def db_seed(
+    class_name: str = typer.Option(..., "--class", "-c", help="Nama class seeder")
+):
+    try:
+        module_path = f"src.database.{class_name}"
+        module = importlib.import_module(module_path)
+        seeder_class = getattr(module, class_name)
+        seeder = seeder_class()
+        seeder.run()
+    except ModuleNotFoundError as e:
+        print(f"❌ Modul '{module_path}' tidak ditemukan : ", e)
+    except AttributeError as e:
+        print(f"❌ Class '{class_name}' tidak ditemukan di modul '{module_path}'.", e)
+    except Exception as e:
+        print(f"❌ Terjadi error saat menjalankan seeder: {e}")
+
+
+if __name__ == "__main__":
+    apps()  # <== HARUS LANGSUNG app(), JANGAN main()

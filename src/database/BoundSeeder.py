@@ -18,11 +18,11 @@ class BoundSeeder:
 
         bounds = [
             {
-                "jenis": "2_brb_7_7_mm",
-                "range_0": json.dumps({"start": 2, "end": 67866}),
-                "range_50": json.dumps({"start": 67867, "end": 128354}),
-                "range_100": json.dumps({"start": 128355, "end": 193392}),
-                "nama": "coba_3",
+                "jenis": "normal",
+                "range_0": json.dumps({"start": 25124 - 2, "end": 86282 - 1}),
+                "range_50": json.dumps({"start": 86283 - 2, "end": 194493 - 1}),
+                "range_100": json.dumps({"start": 319413 - 2, "end": 395785 - 1}),
+                "nama": "coba",
             }
         ]
 

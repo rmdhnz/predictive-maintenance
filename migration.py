@@ -22,7 +22,8 @@ class MotorCurrent(Base):
     id = Column(Integer, primary_key=True)
     time = Column(String(20))
     current = Column(Float)
-    load = Column(Integer)
+    percent_load = Column(Integer)
+    label_id = Column(Integer)
 
 
 class MotorBRBCurrent3mm(Base):
@@ -30,7 +31,8 @@ class MotorBRBCurrent3mm(Base):
     id = Column(Integer, primary_key=True)
     time = Column(String(20))
     current = Column(Float)
-    load = Column(Integer)
+    percent_load = Column(Integer)
+    label_id = Column(Integer)
 
 
 class MotorBRBCurrent7mm(Base):
@@ -38,7 +40,8 @@ class MotorBRBCurrent7mm(Base):
     id = Column(Integer, primary_key=True)
     time = Column(String(20))
     current = Column(Float)
-    load = Column(Integer)
+    percent_load = Column(Integer)
+    label_id = Column(Integer)
 
 
 class MotorBRB3_7_mm(Base):
@@ -46,7 +49,8 @@ class MotorBRB3_7_mm(Base):
     id = Column(Integer, primary_key=True)
     time = Column(String(20))
     current = Column(Float)
-    load = Column(Integer)
+    percent_load = Column(Integer)
+    label_id = Column(Integer)
 
 
 class MotorDB(Base):
@@ -65,3 +69,61 @@ class BoundModel(Base):
     range_50 = Column(String(255))
     range_100 = Column(String(255))
     nama = Column(String(255))
+
+
+class TesMotor(Base):
+    __tablename__ = "tes_motor"
+    id = Column(Integer, primary_key=True)
+    time = Column(String(20))
+    current = Column(Float)
+    percent_load = Column(Integer)
+    label_id = Column(Integer)
+
+
+class TesMotorBRB3(Base):
+    __tablename__ = "tes_motor_brb_3"
+    id = Column(Integer, primary_key=True)
+    time = Column(String(20))
+    current = Column(Float)
+    percent_load = Column(Integer)
+    label_id = Column(Integer)
+
+
+class TesMotorBRB7(Base):
+    __tablename__ = "tes_motor_brb_7"
+    id = Column(Integer, primary_key=True)
+    time = Column(String(20))
+    current = Column(Float)
+    percent_load = Column(Integer)
+    label_id = Column(Integer)
+
+
+class TesMotorBRB37(Base):
+    __tablename__ = "tes_motor_brb_3_7"
+    id = Column(Integer, primary_key=True)
+    time = Column(String(20))
+    current = Column(Float)
+    percent_load = Column(Integer)
+    label_id = Column(Integer)
+
+
+class TesMotorBRB77(Base):
+    __tablename__ = "tes_motor_brb_7_7"
+    id = Column(Integer, primary_key=True)
+    time = Column(String(20))
+    current = Column(Float)
+    percent_load = Column(Integer)
+    label_id = Column(Integer)
+
+
+class DataTest(Base):
+    __tablename__ = "data_test"
+    id = Column(Integer, primary_key=True)
+    time = Column(String(20))
+    current = Column(Float)
+    percent_load = Column(Integer)
+    label_id = Column(Integer)
+
+
+# class Labels(Base) :
+#     __tablename__ = "labels"

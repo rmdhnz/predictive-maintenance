@@ -9,3 +9,7 @@ src/model/
 **/__pycache__/
 data*/
 *.zip
+referensi-noumi/
+.vscode
+model-nn/
+
