@@ -19,9 +19,9 @@ from sklearn.metrics import classification_report, accuracy_score
 
 
 def app():
-    motor_normal = TesMotor()
-    motor_brb_3 = TesMotorBRB3.TesMotorBRB3()
-    motor_brb_7 = TesMotorBRB7.TesMotorBRB7()
+    motor_normal = MotorModel()
+    motor_brb_3 =   MotorBRB3mm()
+    motor_brb_7 = MotorBRB7mm()
     # motor_brb_3_7 = TesMotorBRB37()
     # motor_brb_7_7 = TesMotorBRB77()
 

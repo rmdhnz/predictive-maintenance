@@ -4,7 +4,7 @@ from datetime import datetime
 
 Base = declarative_base()
 
-DATABASE_URL = f"mysql+pymysql://root:$Aviasi380@localhost/predictive_maintenance"
+DATABASE_URL = f"mysql+pymysql://root:@localhost/db_noumi"
 
 engine = create_engine(DATABASE_URL)
 
