@@ -4,6 +4,7 @@ import pandas as pd
 from model.BoundModel import BoundModel
 from migration import DataTest as DataInput
 from model.DataTestModel import DataTestModel
+from config.config import DATABASE_URL
 
 
 class DataTestSeeder:
@@ -11,9 +12,6 @@ class DataTestSeeder:
         bound_model = BoundModel()
         data_model = DataTestModel()
         data_model.truncate_table()
-        DATABASE_URL = (
-            f"mysql+pymysql://root:$Aviasi380@localhost/predictive_maintenance"
-        )
         engine = create_engine(DATABASE_URL)
         Session = sessionmaker(bind=engine)
         session = Session()

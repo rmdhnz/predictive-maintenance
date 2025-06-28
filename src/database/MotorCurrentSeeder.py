@@ -4,14 +4,13 @@ import pandas as pd
 from model.BoundModel import BoundModel
 from model.MotorModel import MotorModel
 from migration import MotorCurrent
+from config.config import DATABASE_URL
 
 
 class MotorCurrentSeeder:
     def run(self):
         bound_model = BoundModel()
-        DATABASE_URL = (
-            f"mysql+pymysql://root:$Aviasi380@localhost/predictive_maintenance"
-        )
+
         engine = create_engine(DATABASE_URL)
         Session = sessionmaker(bind=engine)
         session = Session()

@@ -51,6 +51,13 @@ class MotorBRB3_7_mm(Base):
     current = Column(Float)
     percent_load = Column(Integer)
     label_id = Column(Integer)
+class MotorBRB7_7_mm(Base):
+    __tablename__ = "motor_2_brb_current_7_7_mm"
+    id = Column(Integer, primary_key=True)
+    time = Column(String(20))
+    current = Column(Float)
+    percent_load = Column(Integer)
+    label_id = Column(Integer)
 
 
 class MotorDB(Base):

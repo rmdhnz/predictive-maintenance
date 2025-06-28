@@ -2,16 +2,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from migration import BoundModel
 import json
-
+from config.config import DATABASE_URL
 
 class BoundSeeder:
     def run(self):
         print("Menjalankan seeder data bounds...")
 
-        # Koneksi ke database
-        DATABASE_URL = (
-            "mysql+pymysql://root:$Aviasi380@localhost/predictive_maintenance"
-        )
         engine = create_engine(DATABASE_URL)
         Session = sessionmaker(bind=engine)
         session = Session()

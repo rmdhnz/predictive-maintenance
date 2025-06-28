@@ -3,18 +3,17 @@ from sqlalchemy.orm import sessionmaker
 import pandas as pd
 from model.BoundModel import BoundModel
 from migration import TesMotorBRB3 as DataInput
+from config.config import DATABASE_URL
 
 
 class TesMotorBRB3Seeder:
     def run(self):
         bound_model = BoundModel()
-        DATABASE_URL = (
-            f"mysql+pymysql://root:$Aviasi380@localhost/predictive_maintenance"
-        )
+
         engine = create_engine(DATABASE_URL)
         Session = sessionmaker(bind=engine)
         session = Session()
-        nama, jenis, folder = "coba_1", "1_brb_3mm", "data-brb-3mm"
+        nama, jenis, folder = "coba_2", "1_brb_3mm", "data-brb-3mm"
         bounder = bound_model.where(nama=nama, jenis=jenis).first()
         ranges = bound_model.make_range(bounder)
         ranges_merge = bound_model.make_range(bounder, merge=True)

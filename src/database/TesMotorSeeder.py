@@ -3,14 +3,12 @@ from sqlalchemy.orm import sessionmaker
 import pandas as pd
 from model.BoundModel import BoundModel
 from migration import TesMotor as DataInput
+from config.config import DATABASE_URL
 
 
 class TesMotorSeeder:
     def run(self):
         bound_model = BoundModel()
-        DATABASE_URL = (
-            f"mysql+pymysql://root:$Aviasi380@localhost/predictive_maintenance"
-        )
         engine = create_engine(DATABASE_URL)
         Session = sessionmaker(bind=engine)
         session = Session()

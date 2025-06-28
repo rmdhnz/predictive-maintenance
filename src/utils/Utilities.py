@@ -8,32 +8,6 @@ import matplotlib.pyplot as plt
 class Utilities:
 
     @staticmethod
-    def perform_fft(data: pd.DataFrame):
-        # Ambil data time dan current
-        time = data["time"]
-        current = data["current"]
-
-        # Hitung jumlah titik data
-        N = len(time)
-
-        # FFT
-        fft_result = np.fft.fft(current)
-
-        # Hitung frekuensi
-        freqs = np.fft.fftfreq(N, time[1] - time[0])
-
-        # Ambil magnitudo dari hasil FFT
-        fft_magnitude = np.abs(fft_result) / N
-
-        # Plot hasil FFT
-        plt.figure(figsize=(10, 6))
-        plt.plot(freqs[: N // 2], fft_magnitude[: N // 2])
-        plt.title("FFT - Spektrum Frekuensi")
-        plt.xlabel("Frekuensi (Hz)")
-        plt.ylabel("Amplitudo")
-        plt.grid(True)
-        plt.show()
-
     @staticmethod
     def plot_time_domain(data: pd.DataFrame, subplot=False):
         data["time_sec"] = pd.to_timedelta("00:" + data["time"]).dt.total_seconds()
@@ -76,49 +50,13 @@ class Utilities:
         plt.show()
 
     @staticmethod
-    def fft_transform(data: pd.DataFrame, label):
-        # Ekstrak data
-        time = data["time"].apply(Utilities.time_to_seconds)
-        time = time - time.iloc[0]
-        current = data["current"].values
-        percent_load = data["percent_load"].iloc[
-            0
-        ]  # diasumsikan satu nilai untuk satu sinyal
-
-        # Hitung sampling rate
-        dt = np.mean(np.diff(time))
-        fs = 1.0 / dt
-        N = len(current)
-
-        # FFT
-        fft_vals = np.fft.fft(current)
-        freqs = np.fft.fftfreq(N, d=dt)
-
-        # Ambil hanya komponen positif
-        idx = np.where(freqs >= 0)
-        freqs = freqs[idx]
-        magnitude = np.abs(fft_vals[idx]) * 2.0 / N  # skala normalisasi
-
-        # Buat dataframe hasil
-        df_fft = pd.DataFrame(
-            {
-                "frequency": freqs,
-                "magnitude": magnitude,
-                "percent_load": percent_load,
-                "label": label,
-            },
-        )
-
-        return df_fft
-
-    @staticmethod
     def time_to_seconds(t_str):
         t = datetime.strptime(t_str, "%M:%S.%f")
         return t.minute * 60 + t.second + t.microsecond / 1e6
 
     @staticmethod
     def fft_current_by_load(data: pd.DataFrame, label):
-        time_seconds = data["time"].apply(Utilities.time_to_seconds)
+        time_seconds = data["time"].apply(Utilities.time_to_seconds) #ambil data waktu dan masukkan ke time_to_seconds
         time_seconds = time_seconds - time_seconds.iloc[0]
         data["time_sec"] = time_seconds
         loads = data["percent_load"].unique()
@@ -254,67 +192,6 @@ class Utilities:
             )
 
     @staticmethod
-    def plot_by_load(
-        data: pd.DataFrame,
-        title,
-        xlabel,
-        ylabel,
-        xlim=None,
-        ylim=None,
-        peaks=False,
-    ):
-        for load in data["load"].unique():
-            df_load = data[data["load"] == load]
-            plt.plot(
-                df_load["frequency"],
-                df_load["current_magnitude"],
-                label=f"Load {load}%",
-            )
-            if peaks:
-                peak = df_load[df_load["is_peak"]]
-                plt.scatter(peak["frequency"], peak["magnitude_db"], color="red")
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
-        plt.title(title)
-        plt.grid(True)
-        plt.legend()
-        plt.xlim(xlim)
-        plt.ylim(ylim)
-        plt.show()
-
-        data["time_sec"] = pd.to_timedelta("00:" + data["time"]).dt.total_seconds()
-
-        # Siapkan figure untuk plot gabungan
-        plt.figure(figsize=(10, 6))
-
-        for load in data["percent_load"].unique():
-            # Filter data untuk load tertentu
-            df_load = data[data["percent_load"] == load]
-
-            # Plot current vs time untuk load tertentu dalam satu grafik
-            plt.plot(
-                df_load["time_sec"],
-                df_load["current"],
-                label=f"Load {load}%",
-                color=(
-                    "tab:blue"
-                    if load == 0
-                    else "tab:green" if load == 50 else "tab:red"
-                ),
-            )
-
-        # Set labels dan judul
-        plt.xlabel("Time (s)")
-        plt.ylabel("Current (A)")
-        plt.title("Current vs Time for Different Load Percentages")
-        plt.grid(True)
-        plt.legend()
-
-        # Tampilkan grafik
-        plt.tight_layout()
-        plt.show()
-
-    @staticmethod
     def add_time_sec(data: pd.DataFrame, replace=False):
         time_normal = data["time"].apply(Utilities.time_to_seconds)
         time_normal = time_normal - time_normal.iloc[0]
@@ -324,3 +201,33 @@ class Utilities:
             data.drop(columns=["time"], inplace=True)
             return data
         return data
+    
+    @staticmethod
+    def sideband_freq(Nr):
+        f_fund =50
+        k = 1
+        Ns = 1500
+        s = (Ns - Nr) / Ns
+        f1 = (1 - 2*k*s) * f_fund   # lower side-band
+        f2 = (1 + 2*k*s) * f_fund   # upper side-band
+        return s, (f1, f2)
+    
+    @staticmethod
+    def amplitude_at(freq_vector, mag_db_vector, target_freq, tol=0.2):
+        idx = np.argmin(np.abs(freq_vector - target_freq))
+        if abs(freq_vector[idx] - target_freq) <= tol:
+            return mag_db_vector[idx]
+        else:
+            return np.nan 
+        
+    @staticmethod     
+    def sideband_amplitudes(Nr_dict,freq, mag_db, load_percent):
+        _, (f1, f2) = Utilities.sideband_freq(Nr_dict[load_percent])
+        amp1 = Utilities.amplitude_at(freq, mag_db, f1)
+        amp2 = Utilities.amplitude_at(freq, mag_db, f2)
+        return pd.Series({
+            "load_%": load_percent,
+            "f_lower": f1,  "amp_lower": amp1,
+            "f_upper": f2,  "amp_upper": amp2
+        })
+
